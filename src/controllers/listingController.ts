@@ -7,21 +7,22 @@ import { processFiles } from '../utils/fileHandler';
 export const handleListing = async (req: Request, res: Response) => {
   try {
     const {
-      manufacturer,
-      model,
-      owner_company,
+      manufacturer = '',
+      model = '',
+      owner_company = '',
       stock_number,
-      order,
-      year,
-      web_width,
-      colors,
-      die_stations,
-      description,
-      dropbox_url,
-      owner_name,
-      owner_phone,
-      price,
-      buy_price
+      order = '',
+      year = '',
+      web_width = '',
+      colors = '',
+      die_stations = '',
+      description = '',
+      dropbox_url = '',
+      owner_name = '',
+      owner_phone = '',
+      price = '',
+      buy_price = '',
+      notes = ''
     } = req.body;
 
     const images = req.files as Express.Multer.File[];
@@ -59,7 +60,8 @@ export const handleListing = async (req: Request, res: Response) => {
       owner_name,
       owner_phone,
       price,
-      buy_price
+      buy_price,
+      notes
     ];
 
     const pythonScriptPath = path.resolve(__dirname, '../utils/generate_coversheet.py');
