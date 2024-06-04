@@ -25,6 +25,13 @@ export const uploadToDropbox = async (localFolder: string, dropboxFolder: string
   }
 
   const linkMetadata = await dbx.sharingCreateSharedLinkWithSettings({ path: dropboxFolder });
-  return linkMetadata.url;
+  
+  if ('url' in linkMetadata) {
+    return (linkMetadata as any).url;
+  } else if ('result' in linkMetadata && 'url' in (linkMetadata as any).result) {
+    return (linkMetadata as any).result.url;
+  } else {
+    throw new Error('Failed to retrieve Dropbox shared link URL');
+  }
 };
 

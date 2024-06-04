@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Listing Form</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <h1>Automated Listing Form</h1>
+    <form action="/api/listing" method="post" enctype="multipart/form-data">
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="category" required><br>
+
+        <label for="manufacturer">Manufacturer:</label>
+        <input type="text" id="manufacturer" name="manufacturer" required><br>
+
+        <label for="model">Model:</label>
+        <input type="text" id="model" name="model" required><br>
+
+        <label for="year">Year:</label>
+        <input type="text" id="year" name="year" required><br>
+
+        <label for="web_width">Web Width:</label>
+        <input type="text" id="web_width" name="web_width" required><br>
+
+        <label for="colors">Colors:</label>
+        <input type="text" id="colors" name="colors" required><br>
+
+        <label for="die_stations">Die Stations:</label>
+        <input type="text" id="die_stations" name="die_stations" required><br>
+
+        <label for="serial">Serial #:</label>
+        <input type="text" id="serial" name="serial"><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea><br>
+
+        <label for="owner_company">Owner Company:</label>
+        <input type="text" id="owner_company" name="owner_company" required><br>
+
+        <label for="owner_name">Owner Name:</label>
+        <input type="text" id="owner_name" name="owner_name" required><br>
+
+        <label for="owner_phone">Owner Phone:</label>
+        <input type="text" id="owner_phone" name="owner_phone" required><br>
+
+        <label for="owner_email">Owner Email:</label>
+        <input type="text" id="owner_email" name="owner_email"><br>
+
+        <label for="price">Price:</label>
+        <input type="text" id="price" name="price" required><br>
+
+        <label for="buy_price">Buy Price:</label>
+        <input type="text" id="buy_price" name="buy_price"><br>
+
+        <label for="images">Upload Images:</label>
+        <input type="file" id="images" name="images" multiple required><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
+

@@ -56,7 +56,11 @@ export const handleListing = async (req: Request, res: Response) => {
 
     res.status(201).json({ message: 'Listing created successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred', error: error.message });
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'An error occurred', error: error.message });
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' });
+    }
   }
 };
 
