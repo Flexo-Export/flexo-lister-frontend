@@ -1,5 +1,6 @@
 import sys
 from docx import Document
+import os
 
 def generate_coversheet(stock_number, manufacturer, model, year, web_width, colors, die_stations, description, dropbox_url, owner_company, owner_name, owner_phone, price, buy_price):
     doc = Document()
@@ -22,7 +23,8 @@ def generate_coversheet(stock_number, manufacturer, model, year, web_width, colo
     doc.add_paragraph(f'Buy Price: {buy_price}')
     
     filename = f'{stock_number} Coversheet.docx'
-    doc.save(filename)
+    save_path = os.path.join(os.getcwd(), filename)
+    doc.save(save_path)
 
 if __name__ == "__main__":
     generate_coversheet(*sys.argv[1:])
