@@ -3,62 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automated Listing Form</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <title>File Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: #FFF;
+            border: none;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        #preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        #preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 2px solid #DDD;
+            cursor: grab;
+        }
+        #preview img.dragging {
+            opacity: 0.5;
+        }
+    </style>
+    <script>
+        let dragSrcEl = null;
+
+        function previewFiles() {
+            const preview = document.querySelector('#preview');
+            const files = document.querySelector('input[type=file]').files;
+
+            preview.innerHTML = '';
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.draggable = true;
+                    img.dataset.index = index;
+                    img.ondragstart = handleDragStart;
+                    img.ondragover = handleDragOver;
+                    img.ondragenter = handleDragEnter;
+                    img.ondragleave = handleDragLeave;
+                    img.ondrop = handleDrop;
+                    img.ondragend = handleDragEnd;
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function handleDragStart(e) {
+            e.target.style.opacity = '0.4';
+            dragSrcEl = e.target;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.dataset.index);
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+
+            if (dragSrcEl !== e.target) {
+                const srcIndex = dragSrcEl.dataset.index;
+                const targetIndex = e.target.dataset.index;
+                const preview = document.querySelector('#preview');
+                const children = Array.from(preview.children);
+                const srcImg = children.find(img => img.dataset.index === srcIndex);
+                const targetImg = children.find(img => img.dataset.index === targetIndex);
+
+                preview.insertBefore(srcImg, targetImg);
+                updateIndexes();
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            e.target.style.opacity = '1';
+            const imgs = document.querySelectorAll('#preview img');
+            imgs.forEach(img => img.classList.remove('dragging'));
+        }
+
+        function updateIndexes() {
+            const images = document.querySelectorAll('#preview img');
+            images.forEach((img, index) => {
+                img.dataset.index = index;
+            });
+        }
+
+        function updateFileOrder() {
+            const order = [];
+            const images = document.querySelectorAll('#preview img');
+            images.forEach((img) => {
+                order.push(img.dataset.index);
+            });
+            document.querySelector('#order').value = order.join(',');
+        }
+    </script>
 </head>
 <body>
-    <h1>Automated Listing Form</h1>
-    <form action="/api/listing" method="post" enctype="multipart/form-data">
-        <label for="category">Category:</label>
-        <input type="text" id="category" name="category" required><br>
-
-        <label for="manufacturer">Manufacturer:</label>
-        <input type="text" id="manufacturer" name="manufacturer" required><br>
-
-        <label for="model">Model:</label>
-        <input type="text" id="model" name="model" required><br>
-
-        <label for="year">Year:</label>
-        <input type="text" id="year" name="year" required><br>
-
-        <label for="web_width">Web Width:</label>
-        <input type="text" id="web_width" name="web_width" required><br>
-
-        <label for="colors">Colors:</label>
-        <input type="text" id="colors" name="colors" required><br>
-
-        <label for="die_stations">Die Stations:</label>
-        <input type="text" id="die_stations" name="die_stations" required><br>
-
-        <label for="serial">Serial #:</label>
-        <input type="text" id="serial" name="serial"><br>
-
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" required></textarea><br>
-
-        <label for="owner_company">Owner Company:</label>
-        <input type="text" id="owner_company" name="owner_company" required><br>
-
-        <label for="owner_name">Owner Name:</label>
-        <input type="text" id="owner_name" name="owner_name" required><br>
-
-        <label for="owner_phone">Owner Phone:</label>
-        <input type="text" id="owner_phone" name="owner_phone" required><br>
-
-        <label for="owner_email">Owner Email:</label>
-        <input type="text" id="owner_email" name="owner_email"><br>
-
-        <label for="price">Price:</label>
-        <input type="text" id="price" name="price" required><br>
-
-        <label for="buy_price">Buy Price:</label>
-        <input type="text" id="buy_price" name="buy_price"><br>
-
-        <label for="images">Upload Images:</label>
-        <input type="file" id="images" name="images" multiple required><br>
-
-        <button type="submit">Submit</button>
-    </form>
+    <div class="container">
+        <h1>File Upload Test</h1>
+        <form action="/api/listing" method="post" enctype="multipart/form-data" onsubmit="updateFileOrder()">
+            <div class="form-group">
+                <label for="manufacturer">Manufacturer:</label>
+                <input type="text" id="manufacturer" name="manufacturer" required>
+            </div>
+            <div class="form-group">
+                <label for="model">Model:</label>
+                <input type="text" id="model" name="model" required>
+            </div>
+            <div class="form-group">
+                <label for="owner_company">Owner Company:</label>
+                <input type="text" id="owner_company" name="owner_company" required>
+            </div>
+            <div class="form-group">
+                <label for="stock_number">Stock #:</label>
+                <input type="text" id="stock_number" name="stock_number" required>
+            </div>
+            <div class="form-group">
+                <label for="images">Upload Images:</label>
+                <input type="file" id="images" name="images" multiple required onchange="previewFiles()">
+            </div>
+            <input type="hidden" id="order" name="order">
+            <div id="preview"></div>
+            <div class="form-group">
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
 

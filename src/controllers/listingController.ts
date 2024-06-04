@@ -1,64 +1,45 @@
+import fs from 'fs';
+import path from 'path';
 import { Request, Response } from 'express';
-import { uploadToDropbox } from '../utils/dropbox';
-import { postToWordpress } from '../utils/wordpress';
 import { processFiles } from '../utils/fileHandler';
 
 export const handleListing = async (req: Request, res: Response) => {
   try {
     const {
-      category,
       manufacturer,
       model,
-      year,
-      web_width,
-      colors,
-      die_stations,
-      serial,
-      description,
       owner_company,
-      owner_name,
-      owner_phone,
-      owner_email,
-      price,
-      buy_price
+      stock_number,
+      order
     } = req.body;
 
     const images = req.files as Express.Multer.File[];
-    const listingFolder = `uploads/${model}`;
-    processFiles(images, listingFolder);
+    const orderArray = order.split(',').map((index: string) => parseInt(index, 10));
+    const orderedFiles = orderArray.map((index: number) => images[index]);
 
-    const dropboxFolder = `/New Listings/${model}`;
-    const dropboxLink = await uploadToDropbox(listingFolder, dropboxFolder);
+    const listingsFolder = 'listings';
+    const companyFolder = `${listingsFolder}/${owner_company}`;
+    const stockFolder = `${companyFolder}/${stock_number}`;
 
-    const wordpressData = {
-      title: `${manufacturer} ${model}`,
-      content: `
-        Category: ${category}
-        Manufacturer: ${manufacturer}
-        Model: ${model}
-        Year: ${year}
-        Web Width: ${web_width}
-        Colors: ${colors}
-        Die Stations: ${die_stations}
-        Serial: ${serial}
-        Description: ${description}
-        Owner Company: ${owner_company}
-        Owner Name: ${owner_name}
-        Owner Phone: ${owner_phone}
-        Owner Email: ${owner_email}
-        Price: ${price}
-        Buy Price: ${buy_price}
-        Dropbox Link: ${dropboxLink}
-      `
-    };
+    console.log('Company folder path:', companyFolder);
+    console.log('Stock folder path:', stockFolder);
 
-    await postToWordpress(wordpressData);
+    // Create company folder if it doesn't exist
+    if (!fs.existsSync(companyFolder)) {
+      fs.mkdirSync(companyFolder, { recursive: true });
+      console.log(`Created company folder: ${companyFolder}`);
+    }
 
-    res.status(201).json({ message: 'Listing created successfully' });
+    // Process and rename files
+    processFiles(orderedFiles, stockFolder, manufacturer, model, stock_number);
+
+    res.status(201).json({ message: 'Files uploaded and renamed successfully' });
   } catch (error) {
     if (error instanceof Error) {
+      console.error('Error in handleListing:', error.message);
       res.status(500).json({ message: 'An error occurred', error: error.message });
     } else {
+      console.error('Unknown error in handleListing:', error);
       res.status(500).json({ message: 'An unknown error occurred' });
     }
   }
