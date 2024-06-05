@@ -88,6 +88,17 @@
         #preview img.dragging {
             opacity: 0.5;
         }
+        .phone-group {
+            display: flex;
+            gap: 10px;
+        }
+        .phone-group input {
+            width: auto;
+            flex: 1;
+        }
+        .phone-group input[type="tel"] {
+            flex: 2;
+        }
     </style>
     <script>
         let dragSrcEl = null;
@@ -104,6 +115,7 @@
                     img.src = event.target.result;
                     img.draggable = true;
                     img.dataset.index = index;
+                    img.dataset.filename = file.name;
                     img.ondragstart = handleDragStart;
                     img.ondragover = handleDragOver;
                     img.ondragenter = handleDragEnter;
@@ -175,14 +187,42 @@
             const order = [];
             const images = document.querySelectorAll('#preview img');
             images.forEach((img) => {
-                order.push(img.dataset.index);
+                order.push(img.dataset.filename);
             });
+            console.log('Order before submission:', order.join(',')); // Log order before submission
             document.querySelector('#order').value = order.join(',');
         }
 
         function toggleDropdown() {
             const dropdownContent = document.querySelector('.dropdown-content');
             dropdownContent.classList.toggle('show');
+        }
+
+        function formatPhone(input) {
+            input = input.replace(/\D/g, '');
+            if (input.length <= 10) {
+                return input.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+            } else {
+                return input.replace(/(\d{3})(\d{3})(\d{4})(\d+)/, '($1) $2-$3 x$4');
+            }
+        }
+
+        function handlePhoneInput(e) {
+            e.target.value = formatPhone(e.target.value);
+        }
+
+        function validateEmail(input) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(input);
+        }
+
+        function handleEmailInput(e) {
+            const email = e.target.value;
+            if (email && !validateEmail(email)) {
+                e.target.setCustomValidity('Please enter a valid email address.');
+            } else {
+                e.target.setCustomValidity('');
+            }
         }
     </script>
 </head>
@@ -191,6 +231,10 @@
         <h1>File Upload Form</h1>
         <form action="/api/listing" method="post" enctype="multipart/form-data" onsubmit="updateFileOrder()">
             <div class="orange-box">
+                <div class="form-group">
+                    <label for="stock_number">Stock #:</label>
+                    <input type="text" id="stock_number" name="stock_number" required>
+                </div>
                 <div class="form-group">
                     <label for="manufacturer">Manufacturer:</label>
                     <input type="text" id="manufacturer" name="manufacturer">
@@ -204,10 +248,6 @@
                     <input type="text" id="owner_company" name="owner_company">
                 </div>
                 <div class="form-group">
-                    <label for="stock_number">Stock #:</label>
-                    <input type="text" id="stock_number" name="stock_number" required>
-                </div>
-                <div class="form-group">
                     <label for="images">Upload Images:</label>
                     <input type="file" id="images" name="images" multiple required onchange="previewFiles()">
                 </div>
@@ -219,6 +259,18 @@
             </div>
             <div class="dropdown">
                 <div class="dropdown-content">
+                    <div class="form-group">
+                        <label for="owner_name">Owner Name:</label>
+                        <input type="text" id="owner_name" name="owner_name">
+                    </div>
+                    <div class="form-group phone-group">
+                        <input type="text" id="country_code" name="country_code" placeholder="+1">
+                        <input type="tel" id="owner_phone" name="owner_phone" oninput="handlePhoneInput(event)" placeholder="Phone Number">
+                    </div>
+                    <div class="form-group">
+                        <label for="owner_email">Owner Email:</label>
+                        <input type="email" id="owner_email" name="owner_email" oninput="handleEmailInput(event)">
+                    </div>
                     <div class="form-group">
                         <label for="year">Year:</label>
                         <input type="number" id="year" name="year">
@@ -242,14 +294,6 @@
                     <div class="form-group">
                         <label for="dropbox_url">Dropbox URL:</label>
                         <input type="url" id="dropbox_url" name="dropbox_url">
-                    </div>
-                    <div class="form-group">
-                        <label for="owner_name">Owner Name:</label>
-                        <input type="text" id="owner_name" name="owner_name">
-                    </div>
-                    <div class="form-group">
-                        <label for="owner_phone">Owner Phone:</label>
-                        <input type="tel" id="owner_phone" name="owner_phone">
                     </div>
                     <div class="form-group">
                         <label for="price">Price:</label>

@@ -19,15 +19,30 @@ export const handleListing = async (req: Request, res: Response) => {
       description = '',
       dropbox_url = '',
       owner_name = '',
+      country_code = '',
       owner_phone = '',
+      owner_email = '',
       price = '',
       buy_price = '',
       notes = ''
     } = req.body;
 
+    // Log the order field
+    console.log('Order field:', order);
+
+    // Validate email if provided
+    if (owner_email && !validateEmail(owner_email)) {
+      res.status(400).json({ message: 'Invalid email format' });
+      return;
+    }
+
     const images = req.files as Express.Multer.File[];
-    const orderArray = order.split(',').map((index: string) => parseInt(index, 10));
-    const orderedFiles = orderArray.map((index: number) => images[index]);
+    const orderArray = order.split(',').map((filename: string) => filename.trim());
+    const orderedFiles = orderArray.map((filename: string) => images.find(file => file.originalname === filename));
+
+    // Log the order of files
+    console.log('Order Array:', orderArray);
+    console.log('Ordered Files:', orderedFiles.map((file: Express.Multer.File | undefined) => file?.originalname));
 
     const listingsFolder = 'listings';
     const companyFolder = `${listingsFolder}/${owner_company}`;
@@ -36,6 +51,12 @@ export const handleListing = async (req: Request, res: Response) => {
     console.log('Company folder path:', companyFolder);
     console.log('Stock folder path:', stockFolder);
 
+    // Check for duplicate stock number
+    if (fs.existsSync(stockFolder)) {
+      res.status(400).json({ message: 'Duplicate stock number, please try again' });
+      return;
+    }
+
     // Create company folder if it doesn't exist
     if (!fs.existsSync(companyFolder)) {
       fs.mkdirSync(companyFolder, { recursive: true });
@@ -43,7 +64,7 @@ export const handleListing = async (req: Request, res: Response) => {
     }
 
     // Process and rename files
-    processFiles(orderedFiles, stockFolder, manufacturer, model, stock_number);
+    processFiles(orderedFiles as Express.Multer.File[], stockFolder, manufacturer, model, stock_number);
 
     // Generate coversheet document
     const coversheetArgs = [
@@ -58,7 +79,8 @@ export const handleListing = async (req: Request, res: Response) => {
       dropbox_url,
       owner_company,
       owner_name,
-      owner_phone,
+      `${country_code} ${owner_phone}`,
+      owner_email,
       price,
       buy_price,
       notes
@@ -90,4 +112,9 @@ export const handleListing = async (req: Request, res: Response) => {
     }
   }
 };
+
+function validateEmail(email: string) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
 

@@ -2,12 +2,11 @@ import sys
 from docx import Document
 import os
 
-def generate_coversheet(stock_number, manufacturer, model, year, web_width, colors, die_stations, description, dropbox_url, owner_company, owner_name, owner_phone, price, buy_price, notes):
+def generate_coversheet(stock_number, manufacturer, model, year, web_width, colors, die_stations, description, dropbox_url, owner_company, owner_name, owner_phone, owner_email, price, buy_price, notes):
     doc = Document()
     doc.add_heading('Coversheet', 0)
 
     table = doc.add_table(rows=0, cols=2)
-    table.add_row().cells
     data = [
         ('Stock Number', stock_number),
         ('Category', 'Press'),
@@ -22,6 +21,7 @@ def generate_coversheet(stock_number, manufacturer, model, year, web_width, colo
         ('Owner Company', owner_company),
         ('Owner Name', owner_name),
         ('Owner Phone', owner_phone),
+        ('Owner Email', owner_email),
         ('Price', price),
         ('Buy Price', buy_price),
         ('Additional Notes', notes)
