@@ -128,3 +128,19 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Mac OS generated files
+.DS_Store
+
+# Uploaded files
+uploads/
+
+# Listings directory
+listings/
+
+# Virtual environment
+venv/
+
+# Generated coversheet files
+* Coversheet.docx
+
