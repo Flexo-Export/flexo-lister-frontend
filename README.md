@@ -69,9 +69,9 @@ Create a `.env` file in the root directory and add the following variables:
 
 Start the server using Nodemon:
 
-    ```bash
-    npx nodemon src/server.ts
-    ```
+ ```bash
+ npx nodemon src/server.ts
+ ```
 
 The server will start on port 3000. Open your browser and navigate to http://localhost:3000 to access the frontend interface.
 
