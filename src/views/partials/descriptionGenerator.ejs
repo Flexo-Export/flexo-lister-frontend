@@ -1,0 +1,34 @@
+<div class="form-group">
+    <button type="button" onclick="generateDescription()">Generate Description</button>
+</div>
+<div class="form-group">
+    <label for="description">Description:</label>
+    <textarea id="description" name="description"></textarea>
+</div>
+<script>
+    async function generateDescription() {
+        const manufacturer = document.getElementById('manufacturer').value;
+        const model = document.getElementById('model').value;
+        const year = document.getElementById('year').value;
+        const web_width = document.getElementById('web_width').value;
+        const colors = document.getElementById('colors').value;
+        const die_stations = document.getElementById('die_stations').value;
+        const owner_company = document.getElementById('owner_company').value;
+
+        const response = await fetch('/generate-description', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ manufacturer, model, year, web_width, colors, die_stations, owner_company })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            document.getElementById('description').value = data.description;
+        } else {
+            alert('Failed to generate description');
+        }
+    }
+</script>
+
