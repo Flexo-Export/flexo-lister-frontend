@@ -1,0 +1,100 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flexo Lister</title>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 800px;
+        margin: 50px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+    .form-group input, .form-group textarea, .form-group select, .form-group button {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    .form-group button {
+        background-color: #007BFF;
+        color: #FFF;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .form-group button:hover {
+        background-color: #0056b3;
+    }
+    .orange-box {
+        border: 2px solid orange;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .dropdown {
+        margin-bottom: 20px;
+    }
+    .dropdown-content {
+        display: none;
+        padding: 20px;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .dropdown-content.show {
+        display: block;
+    }
+    #preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    #preview img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border: 2px solid #ddd;
+        cursor: grab;
+        border-radius: 4px;
+    }
+    #preview img.dragging {
+        opacity: 0.5;
+    }
+    .phone-group {
+        display: flex;
+        gap: 10px;
+    }
+    .phone-group input {
+        width: auto;
+        flex: 1;
+    }
+    .phone-group input[type="tel"] {
+        flex: 2;
+    }
+</style>
+

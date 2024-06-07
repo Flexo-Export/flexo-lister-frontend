@@ -1,0 +1,32 @@
+<div class="orange-box">
+    <div class="form-group">
+        <label for="stock_number">Stock #:</label>
+        <input type="text" id="stock_number" name="stock_number" required>
+    </div>
+    <div class="form-group">
+        <label for="manufacturer">Manufacturer:</label>
+        <input type="text" id="manufacturer" name="manufacturer">
+    </div>
+    <div class="form-group">
+        <label for="model">Model:</label>
+        <input type="text" id="model" name="model">
+    </div>
+    <div class="form-group">
+        <label for="owner_company">Owner Company:</label>
+        <input type="text" id="owner_company" name="owner_company">
+    </div>
+    <div class="form-group">
+        <label for="images">Upload Images:</label>
+        <input type="file" id="images" name="images" multiple required onchange="previewFiles()">
+    </div>
+    <input type="hidden" id="order" name="order">
+    <div id="preview"></div>
+</div>
+<div class="form-group">
+    <button type="button" onclick="toggleDropdown()">Additional Fields</button>
+</div>
+<%- include('dropdown') %>
+<div class="form-group">
+    <button type="submit">Submit</button>
+</div>
+

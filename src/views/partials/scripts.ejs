@@ -1,0 +1,126 @@
+<script>
+    let dragSrcEl = null;
+
+    function previewFiles() {
+        const preview = document.querySelector('#preview');
+        const files = document.querySelector('input[type=file]').files;
+
+        preview.innerHTML = '';
+        Array.from(files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = document.createElement('img');
+                img.src = event.target.result;
+                img.draggable = true;
+                img.dataset.index = index;
+                img.dataset.filename = file.name;
+                img.ondragstart = handleDragStart;
+                img.ondragover = handleDragOver;
+                img.ondragenter = handleDragEnter;
+                img.ondragleave = handleDragLeave;
+                img.ondrop = handleDrop;
+                img.ondragend = handleDragEnd;
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function handleDragStart(e) {
+        e.target.style.opacity = '0.4';
+        dragSrcEl = e.target;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', e.target.dataset.index);
+    }
+
+    function handleDragOver(e) {
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+        e.dataTransfer.dropEffect = 'move';
+        return false;
+    }
+
+    function handleDragEnter(e) {
+        e.target.classList.add('dragging');
+    }
+
+    function handleDragLeave(e) {
+        e.target.classList.remove('dragging');
+    }
+
+    function handleDrop(e) {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+
+        if (dragSrcEl !== e.target) {
+            const srcIndex = dragSrcEl.dataset.index;
+            const targetIndex = e.target.dataset.index;
+            const preview = document.querySelector('#preview');
+            const children = Array.from(preview.children);
+            const srcImg = children.find(img => img.dataset.index === srcIndex);
+            const targetImg = children.find(img => img.dataset.index === targetIndex);
+
+            preview.insertBefore(srcImg, targetImg);
+            updateIndexes();
+        }
+        return false;
+    }
+
+    function handleDragEnd(e) {
+        e.target.style.opacity = '1';
+        const imgs = document.querySelectorAll('#preview img');
+        imgs.forEach(img => img.classList.remove('dragging'));
+    }
+
+    function updateIndexes() {
+        const images = document.querySelectorAll('#preview img');
+        images.forEach((img, index) => {
+            img.dataset.index = index;
+        });
+    }
+
+    function updateFileOrder() {
+        const order = [];
+        const images = document.querySelectorAll('#preview img');
+        images.forEach((img) => {
+            order.push(img.dataset.filename);
+        });
+        console.log('Order before submission:', order.join(',')); // Log order before submission
+        document.querySelector('#order').value = order.join(',');
+    }
+
+    function toggleDropdown() {
+        const dropdownContent = document.querySelector('.dropdown-content');
+        dropdownContent.classList.toggle('show');
+    }
+
+    function formatPhone(input) {
+        input = input.replace(/\D/g, '');
+        if (input.length <= 10) {
+            return input.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+        } else {
+            return input.replace(/(\d{3})(\d{3})(\d{4})(\d+)/, '($1) $2-$3 x$4');
+        }
+    }
+
+    function handlePhoneInput(e) {
+        e.target.value = formatPhone(e.target.value);
+    }
+
+    function validateEmail(input) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(input);
+    }
+
+    function handleEmailInput(e) {
+        const email = e.target.value;
+        if (email && !validateEmail(email)) {
+            e.target.setCustomValidity('Please enter a valid email address.');
+        } else {
+            e.target.setCustomValidity('');
+        }
+    }
+</script>
+
