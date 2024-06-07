@@ -86,12 +86,12 @@ export const handleListing = async (req: Request, res: Response) => {
 
 
     // Upload to Dropbox
-    await uploadFolderToDropbox(stockFolder, `/${stock_number}`, dropboxAccessToken);
-    const dropboxShareLink = await getDropboxShareLink(`/${stock_number}`, dropboxAccessToken);
+    const dropboxStockFolderPath = `/Flexo 2.0/${currentYear} Listings/${owner_company}/${stock_number}`;
+    await uploadFolderToDropbox(stockFolder, dropboxStockFolderPath, dropboxAccessToken);
+    const dropboxShareLink = await getDropboxShareLink(dropboxStockFolderPath, dropboxAccessToken);
 
-    // Shorten the Dropbox link using TinyURL
+    // Shorten the Dropbox link using TinyURL with custom alias (stock number)
     const shortenedDropboxUrl = await shortenUrl(dropboxShareLink, stock_number);
-
 
 
     // Generate coversheet document
