@@ -44,9 +44,18 @@ export const handleListing = async (req: Request, res: Response) => {
     console.log('Order Array:', orderArray);
     console.log('Ordered Files:', orderedFiles.map((file: Express.Multer.File | undefined) => file?.originalname));
 
-    const listingsFolder = 'listings';
-    const companyFolder = `${listingsFolder}/${owner_company}`;
-    const stockFolder = `${companyFolder}/${stock_number}`;
+    const entryPath = process.env.ENTRY_PATH || path.join(process.cwd(), 'Flexo 2.0');
+    const currentYear = new Date().getFullYear().toString();
+    const yearFolder = path.join(entryPath, `${currentYear} Listings`);
+
+    // Ensure the year folder exists
+    if (!fs.existsSync(yearFolder)) {
+      fs.mkdirSync(yearFolder, { recursive: true });
+      console.log(`Created year folder: ${yearFolder}`);
+    }
+
+    const companyFolder = path.join(yearFolder, owner_company);
+    const stockFolder = path.join(companyFolder, stock_number);
 
     console.log('Company folder path:', companyFolder);
     console.log('Stock folder path:', stockFolder);
