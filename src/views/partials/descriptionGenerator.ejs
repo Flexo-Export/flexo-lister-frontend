@@ -7,6 +7,8 @@
 </div>
 <script>
     async function generateDescription() {
+        console.log('Generate Description button clicked'); // Log button click
+
         const manufacturer = document.getElementById('manufacturer').value;
         const model = document.getElementById('model').value;
         const year = document.getElementById('year').value;
@@ -15,19 +17,31 @@
         const die_stations = document.getElementById('die_stations').value;
         const owner_company = document.getElementById('owner_company').value;
 
-        const response = await fetch('/generate-description', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ manufacturer, model, year, web_width, colors, die_stations, owner_company })
-        });
+        console.log('Form data:', { manufacturer, model, year, web_width, colors, die_stations, owner_company }); // Log form data
 
-        const data = await response.json();
-        if (response.ok) {
-            document.getElementById('description').value = data.description;
-        } else {
-            alert('Failed to generate description');
+        try {
+            const response = await fetch('/api/generate-description', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ manufacturer, model, year, web_width, colors, die_stations, owner_company })
+            });
+
+            console.log('Response status:', response.status); // Log response status
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Response data:', data); // Log response data
+                document.getElementById('description').value = data.description;
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to generate description:', errorData.message);
+                alert('Failed to generate description');
+            }
+        } catch (error) {
+            console.error('Error generating description:', error); // Log error
+            alert('An error occurred while generating the description');
         }
     }
 </script>
