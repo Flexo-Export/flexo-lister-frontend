@@ -1,0 +1,48 @@
+<div class="form-group">
+    <button type="button" onclick="generateDescription()">Generate Description</button>
+</div>
+<div class="form-group">
+    <label for="description">Description:</label>
+    <textarea id="description" name="description"></textarea>
+</div>
+<script>
+    async function generateDescription() {
+        console.log('Generate Description button clicked'); // Log button click
+
+        const manufacturer = document.getElementById('manufacturer').value;
+        const model = document.getElementById('model').value;
+        const year = document.getElementById('year').value;
+        const web_width = document.getElementById('web_width').value;
+        const colors = document.getElementById('colors').value;
+        const die_stations = document.getElementById('die_stations').value;
+        const owner_company = document.getElementById('owner_company').value;
+
+        console.log('Form data:', { manufacturer, model, year, web_width, colors, die_stations, owner_company }); // Log form data
+
+        try {
+            const response = await fetch('/api/generate-description', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ manufacturer, model, year, web_width, colors, die_stations, owner_company })
+            });
+
+            console.log('Response status:', response.status); // Log response status
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Response data:', data); // Log response data
+                document.getElementById('description').value = data.description;
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to generate description:', errorData.message);
+                alert('Failed to generate description');
+            }
+        } catch (error) {
+            console.error('Error generating description:', error); // Log error
+            alert('An error occurred while generating the description');
+        }
+    }
+</script>
+
