@@ -36,9 +36,6 @@ export const handleListing = async (req: Request, res: Response) => {
       throw new Error('Dropbox access token not set');
     }
 
-    // Log Dropbox access token (remove this in production)
-    console.log('Dropbox access token:', dropboxAccessToken);
-
     // Log the order field
     console.log('Order field:', order);
 
