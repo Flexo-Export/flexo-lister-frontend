@@ -37,37 +37,60 @@ echo npm is installed
 echo Checking if Python is installed...
 where python >nul 2>nul
 if %ERRORLEVEL% neq 0 (
-    echo Python is not installed. Please install Python first.
-    pause
-    exit /b 1
+    where python3 >nul 2>nul
+    if %ERRORLEVEL% neq 0 (
+        echo Python is not installed. Please install Python first.
+        pause
+        exit /b 1
+    ) else (
+        set "PYTHON=python3"
+    )
+) else (
+    set "PYTHON=python"
 )
-echo Python is installed
+echo Python is installed: %PYTHON%
 
 :: Create and activate virtual environment
 if not exist "venv" (
     echo Creating virtual environment...
-    python -m venv venv
+    %PYTHON% -m venv venv
 )
 echo Activating virtual environment...
 call venv\Scripts\activate
+if %ERRORLEVEL% neq 0 (
+    echo Failed to activate virtual environment.
+    pause
+    exit /b 1
+)
 echo Virtual environment activated
 
 :: Check if required Python packages are installed
-pip show python-docx >nul 2>nul
+echo Checking for required Python packages...
+venv\Scripts\pip show python-docx >nul 2>nul
 if %ERRORLEVEL% neq 0 (
     echo Installing required Python packages...
-    pip install -r requirements.txt
+    venv\Scripts\pip install -r requirements.txt
 )
 echo Required Python packages are installed
 
 :: Install Node.js dependencies
 echo Installing Node.js dependencies...
 npm install
+if %ERRORLEVEL% neq 0 (
+    echo Failed to install Node.js dependencies.
+    pause
+    exit /b 1
+)
 echo Node.js dependencies installed
 
 :: Start the server in a new command window
 echo Starting the server...
 start "Node.js Server" cmd /k "npx nodemon src\server.ts"
+if %ERRORLEVEL% neq 0 (
+    echo Failed to start the server.
+    pause
+    exit /b 1
+)
 echo Server started
 
 :: Wait a few seconds to let the server start
