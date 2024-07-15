@@ -97,7 +97,7 @@ if %ERRORLEVEL% neq 0 (
 echo Node.js dependencies installed
 pause
 
-:: Start the server in a new window
+:: Start the server and keep the window open
 echo Starting the server...
 start "Node.js Server" cmd /k "npx nodemon src\server.ts"
 if %ERRORLEVEL% neq 0 (
@@ -107,9 +107,6 @@ if %ERRORLEVEL% neq 0 (
 )
 echo Server started
 pause
-
-:: Give the server a few seconds to start
-timeout /t 5
 
 :: Open the default web browser to the application
 start "" "http://localhost:3000"
