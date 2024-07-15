@@ -127,4 +127,5 @@ for /f "tokens=5" %%a in ('netstat -aon ^| findstr :3000') do (
 echo Server process killed
 
 :: Exit the script
+pause
 exit /b 0
