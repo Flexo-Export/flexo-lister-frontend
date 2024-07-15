@@ -66,6 +66,11 @@ echo Checking for required Python packages...
 if %ERRORLEVEL% neq 0 (
     echo Installing required Python packages...
     %PYTHON% -m pip install -r requirements.txt
+    if %ERRORLEVEL% neq 0 (
+        echo Failed to install Python packages.
+        pause
+        exit /b 1
+    )
 )
 echo Required Python packages are installed
 
@@ -79,16 +84,17 @@ if %ERRORLEVEL% neq 0 (
 )
 echo Node.js dependencies installed
 
-:: Start the server
+:: Start the server in a new window
 echo Starting the server...
 start "Node.js Server" cmd /k "npx nodemon src\server.ts"
 if %ERRORLEVEL% neq 0 (
     echo Failed to start the server.
     pause
+    exit /b 1
 )
 echo Server started
 
-:: Wait a few seconds to let the server start
+:: Give the server a few seconds to start
 timeout /t 5
 
 :: Open the default web browser to the application
