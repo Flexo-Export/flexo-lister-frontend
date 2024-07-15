@@ -13,6 +13,10 @@
     "openai": "^4.49.1",
     "typescript": "^5.4.5"
   },
+  "scripts": {
+    "start": "ts-node src/server.ts",
+    "setup": "./setup.sh"
+  },
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/dotenv": "^8.2.0",
