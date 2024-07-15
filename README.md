@@ -20,8 +20,77 @@ Flexo-Lister is a tool designed to automate the process of listing and organizin
 - **Document Generation**: Python, python-docx
 - **Authentication and API Integration**: Google APIs (Gmail)
 
-## Installation
 
+# Flexo-Lister Setup and Installation Guide
+
+This guide provides step-by-step instructions to set up and run the Flexo-Lister application on both macOS and Windows.
+
+## OPTION 1
+Auto Kickstart
+## Prerequisites
+
+Before you begin, ensure you have the following installed on your computer:
+
+- **Node.js**: [Download and install Node.js](https://nodejs.org/)
+- **Python 3**: [Download and install Python 3](https://www.python.org/)
+
+## Clone the Repository
+
+1. Open your terminal (macOS) or Command Prompt (Windows).
+2. Navigate to the directory where you want to clone the repository.
+3. Run the following command to clone the repository:
+    ```sh
+    git clone [flexo-lister-](https://github.com/Flexo-Export/flexo-lister-frontend/)
+    ```
+
+## Setting Up macOS
+
+1. **Navigate to the Project Directory**:
+    ```sh
+    cd flexo-lister-frontend
+    ```
+
+2. **Make the Script Executable**:
+    ```sh
+    chmod +x start_my_app.command
+    ```
+
+3. **Run the Script**:
+    - Double-click the `start_my_app.command` file to start the application.
+
+## Setting Up Windows
+
+1. **Navigate to the Project Directory**:
+    ```cmd
+    cd flexo-lister-frontend
+    ```
+
+2. **Run the Script**:
+    - Double-click the `start_my_app.bat` file to start the application.
+
+## Setting Up Environment Variables
+
+1. **Create a `.env` File**:
+    - In the root of your project directory, create a file named `.env`.
+    - Add the necessary environment variables to this file:
+
+    ```ini
+    DROPBOX_ACCESS_TOKEN=your_dropbox_access_token
+    OPENAI_API_KEY=your_openai_api_key
+    ENTRY_PATH=your_entry_path
+    ```
+
+## Final Steps
+
+After following the setup instructions for your operating system, the application should start automatically, open in your default web browser, and display the Flexo-Lister interface. When you are done, you can stop the server by pressing any key in the terminal or command prompt window.
+
+---
+
+By following these steps, you should be able to set up and run the Flexo-Lister application on both macOS and Windows.
+
+
+## OPTION 2
+Manual Installation
 ### Prerequisites
 
 - Node.js (v14.x or higher)
