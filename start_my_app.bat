@@ -50,40 +50,12 @@ if %ERRORLEVEL% neq 0 (
 )
 echo Python is installed: %PYTHON%
 
-:: Create and activate virtual environment
-if not exist "venv" (
-    echo Creating virtual environment...
-    %PYTHON% -m venv venv
-)
-
-echo Activating virtual environment...
-if exist "venv\Scripts\activate.bat" (
-    call venv\Scripts\activate.bat
-) else (
-    if exist "venv\Scripts\activate" (
-        call venv\Scripts\activate
-    ) else (
-        echo Failed to find the activation script. Please ensure the virtual environment was created correctly.
-        pause
-        exit /b 1
-    )
-)
-
-:: Check if activation was successful
-if not defined VIRTUAL_ENV (
-    echo Failed to activate virtual environment.
-    echo Ensure you have the correct version of Python installed and try again.
-    pause
-    exit /b 1
-)
-echo Virtual environment activated
-
 :: Check if required Python packages are installed
 echo Checking for required Python packages...
-venv\Scripts\pip show python-docx >nul 2>nul
+%PYTHON% -m pip show python-docx >nul 2>nul
 if %ERRORLEVEL% neq 0 (
     echo Installing required Python packages...
-    venv\Scripts\pip install -r requirements.txt
+    %PYTHON% -m pip install -r requirements.txt
 )
 echo Required Python packages are installed
 
@@ -124,11 +96,6 @@ for /f "tokens=5" %%a in ('netstat -aon ^| findstr :3000') do (
     taskkill /f /pid %%a 2>nul
 )
 echo Server process killed
-
-:: Deactivate virtual environment
-echo Deactivating virtual environment...
-call venv\Scripts\deactivate.bat
-echo Virtual environment deactivated
 
 :: Exit the script
 exit /b 0
