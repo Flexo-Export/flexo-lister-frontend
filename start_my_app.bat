@@ -85,7 +85,6 @@ start "Node.js Server" cmd /k "npx nodemon src\server.ts"
 if %ERRORLEVEL% neq 0 (
     echo Failed to start the server.
     pause
-    exit /b 1
 )
 echo Server started
 
