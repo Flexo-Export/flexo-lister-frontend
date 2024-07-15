@@ -71,6 +71,30 @@ if %ERRORLEVEL% neq 0 (
 echo pip is installed
 pause
 
+:: Check if virtual environment exists
+if not exist "venv" (
+    echo Creating virtual environment...
+    %PYTHON% -m venv venv
+    if %ERRORLEVEL% neq 0 (
+        echo Failed to create virtual environment.
+        pause
+        exit /b 1
+    )
+)
+echo Virtual environment is set up
+pause
+
+:: Activate virtual environment
+echo Activating virtual environment...
+call venv\Scripts\activate.bat
+if %ERRORLEVEL% neq 0 (
+    echo Failed to activate virtual environment.
+    pause
+    exit /b 1
+)
+echo Virtual environment activated
+pause
+
 :: Check if required Python packages are installed
 echo Checking for required Python packages...
 %PYTHON% -m pip show python-docx >nul 2>nul
@@ -97,7 +121,7 @@ if %ERRORLEVEL% neq 0 (
 echo Node.js dependencies installed
 pause
 
-:: Start the server and keep the window open
+:: Start the server
 echo Starting the server...
 start "Node.js Server" cmd /k "npx nodemon src\server.ts"
 if %ERRORLEVEL% neq 0 (
@@ -122,6 +146,9 @@ for /f "tokens=5" %%a in ('netstat -aon ^| findstr :3000') do (
     taskkill /f /pid %%a 2>nul
 )
 echo Server process killed
+
+:: Deactivate virtual environment
+call venv\Scripts\deactivate.bat
 
 :: Exit the script
 pause
