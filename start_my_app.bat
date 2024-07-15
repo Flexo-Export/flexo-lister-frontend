@@ -50,32 +50,36 @@ if %ERRORLEVEL% neq 0 (
 )
 echo Python is installed: %PYTHON%
 
-:: Check if pip is installed
-echo Checking if pip is installed...
-%PYTHON% -m pip --version >nul 2>nul
-if %ERRORLEVEL% neq 0 (
-    echo pip is not installed. Installing pip...
-    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-    %PYTHON% get-pip.py
-    if %ERRORLEVEL% neq 0 (
-        echo Failed to install pip. Please install pip manually.
-        pause
-        exit /b 1
-    )
+:: Create and activate virtual environment
+if not exist "venv" (
+    echo Creating virtual environment...
+    %PYTHON% -m venv venv
 )
-echo pip is installed
+
+echo Activating virtual environment...
+if exist "venv\Scripts\activate.bat" (
+    call venv\Scripts\activate.bat
+) else (
+    echo Failed to find the activation script. Please ensure the virtual environment was created correctly.
+    pause
+    exit /b 1
+)
+
+:: Check if activation was successful
+if not defined VIRTUAL_ENV (
+    echo Failed to activate virtual environment.
+    echo Ensure you have the correct version of Python installed and try again.
+    pause
+    exit /b 1
+)
+echo Virtual environment activated
 
 :: Check if required Python packages are installed
 echo Checking for required Python packages...
-%PYTHON% -m pip show python-docx >nul 2>nul
+venv\Scripts\pip show python-docx >nul 2>nul
 if %ERRORLEVEL% neq 0 (
     echo Installing required Python packages...
-    %PYTHON% -m pip install -r requirements.txt
-    if %ERRORLEVEL% neq 0 (
-        echo Failed to install Python packages.
-        pause
-        exit /b 1
-    )
+    venv\Scripts\pip install -r requirements.txt
 )
 echo Required Python packages are installed
 
@@ -89,7 +93,7 @@ if %ERRORLEVEL% neq 0 (
 )
 echo Node.js dependencies installed
 
-:: Start the server in a new window
+:: Start the server in a new command window
 echo Starting the server...
 start "Node.js Server" cmd /k "npx nodemon src\server.ts"
 if %ERRORLEVEL% neq 0 (
@@ -99,7 +103,7 @@ if %ERRORLEVEL% neq 0 (
 )
 echo Server started
 
-:: Give the server a few seconds to start
+:: Wait a few seconds to let the server start
 timeout /t 5
 
 :: Open the default web browser to the application
@@ -116,6 +120,11 @@ for /f "tokens=5" %%a in ('netstat -aon ^| findstr :3000') do (
     taskkill /f /pid %%a 2>nul
 )
 echo Server process killed
+
+:: Deactivate virtual environment
+echo Deactivating virtual environment...
+call venv\Scripts\deactivate.bat
+echo Virtual environment deactivated
 
 :: Exit the script
 exit /b 0
