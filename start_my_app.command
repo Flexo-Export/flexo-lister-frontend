@@ -65,9 +65,9 @@ echo Installing Node.js dependencies...
 npm install
 echo Node.js dependencies installed
 
-:: Start the server in the background
+:: Start the server in a new command window
 echo Starting the server...
-start "Node.js Server" cmd /c "npx nodemon src\server.ts"
+start "Node.js Server" cmd /k "npx nodemon src\server.ts"
 echo Server started
 
 :: Wait a few seconds to let the server start
