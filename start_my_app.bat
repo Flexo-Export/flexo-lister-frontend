@@ -1,12 +1,16 @@
 @echo off
+setlocal enabledelayedexpansion
 
 :: Change to the script's directory
 cd /d "%~dp0"
-echo Changed directory to script's location
+echo Changed directory to script's location: %~dp0
 
 :: Function to check if a port is in use and kill the process
 echo Checking if port 3000 is in use...
-for /f "tokens=5" %%a in ('netstat -aon ^| findstr :3000') do taskkill /f /pid %%a 2>nul
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :3000') do (
+    echo Killing process %%a running on port 3000
+    taskkill /f /pid %%a 2>nul
+)
 echo Done checking port 3000
 
 :: Check if Node.js is installed
@@ -61,14 +65,26 @@ echo Installing Node.js dependencies...
 npm install
 echo Node.js dependencies installed
 
-:: Start the server
+:: Start the server in a new command window
 echo Starting the server...
-npx nodemon src\server.ts
+start "Node.js Server" cmd /k "npx nodemon src\server.ts"
+echo Server started
+
+:: Wait a few seconds to let the server start
+timeout /t 5
+
+:: Open the default web browser to the application
+start "" "http://localhost:3000"
+echo Opened default web browser to http://localhost:3000
+
+:: Keep the terminal window open
+echo Press any key to stop the server and exit...
+pause >nul
 
 :: Deactivate virtual environment
 echo Deactivating virtual environment...
 call venv\Scripts\deactivate
 echo Virtual environment deactivated
 
-pause
+:: Exit the script
 exit
