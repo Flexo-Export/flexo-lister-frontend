@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: Change to the script's directory
+:: Get the directory of the script
 cd /d "%~dp0"
 echo Changed directory to script's location: %~dp0
 
@@ -56,7 +56,7 @@ if not exist "venv" (
     %PYTHON% -m venv venv
 )
 echo Activating virtual environment...
-call venv\Scripts\activate
+call venv\Scripts\activate.bat
 if %ERRORLEVEL% neq 0 (
     echo Failed to activate virtual environment.
     pause
@@ -102,12 +102,19 @@ echo Opened default web browser to http://localhost:3000
 
 :: Keep the terminal window open
 echo Press any key to stop the server and exit...
-pause >nul
+pause
+
+:: Kill the server process
+echo Killing the server process...
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :3000') do (
+    taskkill /f /pid %%a 2>nul
+)
+echo Server process killed
 
 :: Deactivate virtual environment
 echo Deactivating virtual environment...
-call venv\Scripts\deactivate
+call venv\Scripts\deactivate.bat
 echo Virtual environment deactivated
 
 :: Exit the script
-exit
+exit /b 0
