@@ -1,102 +1,78 @@
-#!/bin/bash
+@echo off
+setlocal
 
-# Get the directory of the script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REM Get the directory of the script
+set "SCRIPT_DIR=%~dp0"
+cd /d "%SCRIPT_DIR%"
 
-# Navigate to the app directory
-cd "$SCRIPT_DIR"
+REM Function to kill any process running on the specified port
+set "PORT=3000"
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :%PORT% ^| findstr LISTENING') do (
+    echo Killing process %%a running on port %PORT%
+    taskkill /PID %%a /F
+    goto :PORT_KILLED
+)
+echo No process running on port %PORT%
+:PORT_KILLED
 
-# Function to kill any process running on the specified port
-kill_process_on_port() {
-  PORT=$1
-  PID=$(lsof -t -i:$PORT)
-  if [ -n "$PID" ]; then
-    echo "Killing process $PID running on port $PORT"
-    kill -9 $PID
-  else
-    echo "No process running on port $PORT"
-  fi
-}
+REM Check if Node.js is installed
+where node >nul 2>nul
+if %errorlevel% neq 0 (
+    echo Node.js is not installed. Please install Node.js first.
+    pause
+    exit /b 1
+)
 
-# Kill any process running on port 3000
-kill_process_on_port 3000
-
-# Check if Node.js is installed
-if ! command -v node &> /dev/null
-then
-    echo "Node.js is not installed. Installing Node.js..."
-    # Install Node.js (using Homebrew for macOS)
-    if command -v brew &> /dev/null
-    then
-        brew install node
-    else
-        echo "Homebrew is not installed. Please install Homebrew first."
-        exit 1
-    fi
-fi
-
-# Check if npm is installed
-if ! command -v npm &> /dev/null
-then
-    echo "npm is not installed. Installing npm..."
-    # Install npm
+REM Check if npm is installed
+where npm >nul 2>nul
+if %errorlevel% neq 0 (
+    echo npm is not installed. Installing npm...
     npm install -g npm
-fi
+)
 
-# Check if Python is installed
-if ! command -v python3 &> /dev/null
-then
-    echo "Python3 is not installed. Installing Python3..."
-    # Install Python3 (using Homebrew for macOS)
-    if command -v brew &> /dev/null
-    then
-        brew install python
-    else
-        echo "Homebrew is not installed. Please install Homebrew first."
-        exit 1
-    fi
-fi
+REM Check if Python is installed
+where python >nul 2>nul
+if %errorlevel% neq 0 (
+    echo Python3 is not installed. Please install Python3 first.
+    pause
+    exit /b 1
+)
 
-# Create and activate virtual environment
-VENV_DIR="$SCRIPT_DIR/venv"
-if [ ! -d "$VENV_DIR" ]; then
-    python3 -m venv "$VENV_DIR"
-fi
-source "$VENV_DIR/bin/activate"
+REM Create and activate virtual environment
+set "VENV_DIR=%SCRIPT_DIR%\venv"
+if not exist "%VENV_DIR%" (
+    python -m venv "%VENV_DIR%"
+)
+call "%VENV_DIR%\Scripts\activate.bat"
 
-# Check if required Python packages are installed
-REQUIRED_PKG="python-docx"
-PKG_OK=$(python3 -m pip show $REQUIRED_PKG)
-if [ "" = "$PKG_OK" ]; then
-  echo "Installing required Python packages..."
-  python3 -m pip install -r requirements.txt
-fi
+REM Check if required Python packages are installed
+python -m pip show python-docx >nul 2>nul
+if %errorlevel% neq 0 (
+    echo Installing required Python packages...
+    python -m pip install -r requirements.txt
+)
 
-# Install Node.js dependencies
+REM Install Node.js dependencies
 npm install
 
-# Start the server in the background
-npx nodemon src/server.ts &
+REM Start the server in the background
+start "" npx nodemon src\server.ts
 
-# Store the PID of the background process
-SERVER_PID=$!
+REM Give the server a few seconds to start
+timeout /t 5 /nobreak
 
-# Give the server a few seconds to start
-sleep 5
+REM Open the default web browser to the application
+start http://localhost:3000
 
-# Open the default web browser to the application
-open "http://localhost:3000"
+REM Keep the terminal window open
+echo Press any key to stop the server and exit...
+pause >nul
 
-# Keep the terminal window open
-echo "Press any key to stop the server and exit..."
-read -n 1
+REM Kill the server process
+for /f "tokens=2" %%a in ('tasklist ^| findstr node') do taskkill /PID %%a /F
 
-# Kill the server process
-kill $SERVER_PID
+REM Deactivate virtual environment
+call "%VENV_DIR%\Scripts\deactivate.bat"
 
-# Deactivate virtual environment
-deactivate
-
-# Exit the script
-exit
-
+endlocal
+exit /b
