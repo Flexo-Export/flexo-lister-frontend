@@ -54,9 +54,14 @@ echo Python is installed: %PYTHON%
 echo Checking if pip is installed...
 %PYTHON% -m pip --version >nul 2>nul
 if %ERRORLEVEL% neq 0 (
-    echo pip is not installed. Please install pip first.
-    pause
-    exit /b 1
+    echo pip is not installed. Installing pip...
+    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    %PYTHON% get-pip.py
+    if %ERRORLEVEL% neq 0 (
+        echo Failed to install pip. Please install pip manually.
+        pause
+        exit /b 1
+    )
 )
 echo pip is installed
 
