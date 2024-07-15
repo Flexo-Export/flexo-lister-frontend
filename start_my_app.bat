@@ -50,6 +50,16 @@ if %ERRORLEVEL% neq 0 (
 )
 echo Python is installed: %PYTHON%
 
+:: Check if pip is installed
+echo Checking if pip is installed...
+%PYTHON% -m pip --version >nul 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo pip is not installed. Please install pip first.
+    pause
+    exit /b 1
+)
+echo pip is installed
+
 :: Check if required Python packages are installed
 echo Checking for required Python packages...
 %PYTHON% -m pip show python-docx >nul 2>nul
