@@ -82,7 +82,7 @@ export const handleListing = async (req: Request, res: Response) => {
     }
 
     // Process and rename files
-    processFiles(orderedFiles as Express.Multer.File[], stockFolder, manufacturer, model, stock_number);
+    await processFiles(orderedFiles as Express.Multer.File[], stockFolder, manufacturer, model, stock_number);
 
     // Upload to Dropbox
     const dropboxStockFolderPath = `/Flexo 2.0/${currentYear} Listings/${owner_company}/${stock_number}`;
