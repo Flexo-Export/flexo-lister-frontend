@@ -69,7 +69,7 @@ if %ERRORLEVEL% neq 0 (
 )
 echo Node.js dependencies installed
 
-:: Start the server in a new command window
+:: Start the server
 echo Starting the server...
 start "Node.js Server" cmd /k "npx nodemon src\server.ts"
 if %ERRORLEVEL% neq 0 (
