@@ -4,6 +4,7 @@ setlocal enabledelayedexpansion
 :: Get the directory of the script
 cd /d "%~dp0"
 echo Changed directory to script's location: %~dp0
+pause
 
 :: Function to check if a port is in use and kill the process
 echo Checking if port 3000 is in use...
@@ -12,6 +13,7 @@ for /f "tokens=5" %%a in ('netstat -aon ^| findstr :3000') do (
     taskkill /f /pid %%a 2>nul
 )
 echo Done checking port 3000
+pause
 
 :: Check if Node.js is installed
 echo Checking if Node.js is installed...
@@ -22,6 +24,7 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 echo Node.js is installed
+pause
 
 :: Check if npm is installed
 echo Checking if npm is installed...
@@ -32,6 +35,7 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 echo npm is installed
+pause
 
 :: Check if Python is installed
 echo Checking if Python is installed...
@@ -49,6 +53,7 @@ if %ERRORLEVEL% neq 0 (
     set "PYTHON=python"
 )
 echo Python is installed: %PYTHON%
+pause
 
 :: Check if pip is installed
 echo Checking if pip is installed...
@@ -64,6 +69,7 @@ if %ERRORLEVEL% neq 0 (
     )
 )
 echo pip is installed
+pause
 
 :: Check if required Python packages are installed
 echo Checking for required Python packages...
@@ -78,6 +84,7 @@ if %ERRORLEVEL% neq 0 (
     )
 )
 echo Required Python packages are installed
+pause
 
 :: Install Node.js dependencies
 echo Installing Node.js dependencies...
@@ -88,6 +95,7 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 echo Node.js dependencies installed
+pause
 
 :: Start the server in a new window
 echo Starting the server...
@@ -98,6 +106,7 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 echo Server started
+pause
 
 :: Give the server a few seconds to start
 timeout /t 5
