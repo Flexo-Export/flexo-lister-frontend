@@ -7,6 +7,8 @@ import { uploadFolderToDropbox, getDropboxShareLink } from '../utils/dropboxHand
 import { shortenUrl } from '../utils/tinyUrlHandler';
 import dotenv from 'dotenv';
 
+dotenv.config();
+
 export const handleListing = async (req: Request, res: Response) => {
   try {
     const {
@@ -20,7 +22,6 @@ export const handleListing = async (req: Request, res: Response) => {
       colors = '',
       die_stations = '',
       description = '',
-      //dropbox_url = '',
       owner_name = '',
       country_code = '',
       owner_phone = '',
@@ -30,8 +31,6 @@ export const handleListing = async (req: Request, res: Response) => {
       notes = ''
     } = req.body;
 
-
-
     const dropboxAccessToken = process.env.DROPBOX_ACCESS_TOKEN;
     if (!dropboxAccessToken) {
       throw new Error('Dropbox access token not set');
@@ -39,11 +38,6 @@ export const handleListing = async (req: Request, res: Response) => {
 
     // Log Dropbox access token (remove this in production)
     console.log('Dropbox access token:', dropboxAccessToken);
-
-    // Log the order field
-    console.log('Order field:', order);
-
-
 
     // Log the order field
     console.log('Order field:', order);
@@ -93,7 +87,6 @@ export const handleListing = async (req: Request, res: Response) => {
     // Process and rename files
     processFiles(orderedFiles as Express.Multer.File[], stockFolder, manufacturer, model, stock_number);
 
-
     // Upload to Dropbox
     const dropboxStockFolderPath = `/Flexo 2.0/${currentYear} Listings/${owner_company}/${stock_number}`;
     await uploadFolderToDropbox(stockFolder, dropboxStockFolderPath, dropboxAccessToken);
@@ -101,7 +94,6 @@ export const handleListing = async (req: Request, res: Response) => {
 
     // Shorten the Dropbox link using TinyURL with custom alias (stock number)
     const shortenedDropboxUrl = await shortenUrl(dropboxShareLink, stock_number);
-
 
     // Generate coversheet document
     const coversheetArgs = [
