@@ -55,9 +55,18 @@ if not exist "venv" (
     echo Creating virtual environment...
     %PYTHON% -m venv venv
 )
+
 echo Activating virtual environment...
-call venv\Scripts\activate.bat
-if %ERRORLEVEL% neq 0 (
+if exist "venv\Scripts\activate.bat" (
+    call venv\Scripts\activate.bat
+) else (
+    echo Failed to find the activation script.
+    pause
+    exit /b 1
+)
+
+:: Check if activation was successful
+if not defined VIRTUAL_ENV (
     echo Failed to activate virtual environment.
     echo Ensure you have the correct version of Python installed and try again.
     pause
