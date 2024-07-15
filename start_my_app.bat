@@ -59,6 +59,7 @@ echo Activating virtual environment...
 call venv\Scripts\activate.bat
 if %ERRORLEVEL% neq 0 (
     echo Failed to activate virtual environment.
+    echo Ensure you have the correct version of Python installed and try again.
     pause
     exit /b 1
 )
