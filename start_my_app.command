@@ -1,90 +1,102 @@
-@echo off
-setlocal enabledelayedexpansion
+#!/bin/bash
 
-:: Change to the script's directory
-cd /d "%~dp0"
-echo Changed directory to script's location: %~dp0
+# Get the directory of the script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-:: Function to check if a port is in use and kill the process
-echo Checking if port 3000 is in use...
-for /f "tokens=5" %%a in ('netstat -aon ^| findstr :3000') do (
-    echo Killing process %%a running on port 3000
-    taskkill /f /pid %%a 2>nul
-)
-echo Done checking port 3000
+# Navigate to the app directory
+cd "$SCRIPT_DIR"
 
-:: Check if Node.js is installed
-echo Checking if Node.js is installed...
-where node >nul 2>nul
-if %ERRORLEVEL% neq 0 (
-    echo Node.js is not installed. Please install Node.js first.
-    pause
-    exit /b 1
-)
-echo Node.js is installed
+# Function to kill any process running on the specified port
+kill_process_on_port() {
+  PORT=$1
+  PID=$(lsof -t -i:$PORT)
+  if [ -n "$PID" ]; then
+    echo "Killing process $PID running on port $PORT"
+    kill -9 $PID
+  else
+    echo "No process running on port $PORT"
+  fi
+}
 
-:: Check if npm is installed
-echo Checking if npm is installed...
-where npm >nul 2>nul
-if %ERRORLEVEL% neq 0 (
-    echo npm is not installed. Please install npm first.
-    pause
-    exit /b 1
-)
-echo npm is installed
+# Kill any process running on port 3000
+kill_process_on_port 3000
 
-:: Check if Python is installed
-echo Checking if Python is installed...
-where python >nul 2>nul
-if %ERRORLEVEL% neq 0 (
-    echo Python is not installed. Please install Python first.
-    pause
-    exit /b 1
-)
-echo Python is installed
+# Check if Node.js is installed
+if ! command -v node &> /dev/null
+then
+    echo "Node.js is not installed. Installing Node.js..."
+    # Install Node.js (using Homebrew for macOS)
+    if command -v brew &> /dev/null
+    then
+        brew install node
+    else
+        echo "Homebrew is not installed. Please install Homebrew first."
+        exit 1
+    fi
+fi
 
-:: Create and activate virtual environment
-if not exist "venv" (
-    echo Creating virtual environment...
-    python -m venv venv
-)
-echo Activating virtual environment...
-call venv\Scripts\activate
-echo Virtual environment activated
+# Check if npm is installed
+if ! command -v npm &> /dev/null
+then
+    echo "npm is not installed. Installing npm..."
+    # Install npm
+    npm install -g npm
+fi
 
-:: Check if required Python packages are installed
-pip show python-docx >nul 2>nul
-if %ERRORLEVEL% neq 0 (
-    echo Installing required Python packages...
-    pip install -r requirements.txt
-)
-echo Required Python packages are installed
+# Check if Python is installed
+if ! command -v python3 &> /dev/null
+then
+    echo "Python3 is not installed. Installing Python3..."
+    # Install Python3 (using Homebrew for macOS)
+    if command -v brew &> /dev/null
+    then
+        brew install python
+    else
+        echo "Homebrew is not installed. Please install Homebrew first."
+        exit 1
+    fi
+fi
 
-:: Install Node.js dependencies
-echo Installing Node.js dependencies...
+# Create and activate virtual environment
+VENV_DIR="$SCRIPT_DIR/venv"
+if [ ! -d "$VENV_DIR" ]; then
+    python3 -m venv "$VENV_DIR"
+fi
+source "$VENV_DIR/bin/activate"
+
+# Check if required Python packages are installed
+REQUIRED_PKG="python-docx"
+PKG_OK=$(python3 -m pip show $REQUIRED_PKG)
+if [ "" = "$PKG_OK" ]; then
+  echo "Installing required Python packages..."
+  python3 -m pip install -r requirements.txt
+fi
+
+# Install Node.js dependencies
 npm install
-echo Node.js dependencies installed
 
-:: Start the server in a new command window
-echo Starting the server...
-start "Node.js Server" cmd /k "npx nodemon src\server.ts"
-echo Server started
+# Start the server in the background
+npx nodemon src/server.ts &
 
-:: Wait a few seconds to let the server start
-timeout /t 5
+# Store the PID of the background process
+SERVER_PID=$!
 
-:: Open the default web browser to the application
-start "" "http://localhost:3000"
-echo Opened default web browser to http://localhost:3000
+# Give the server a few seconds to start
+sleep 5
 
-:: Keep the terminal window open
-echo Press any key to stop the server and exit...
-pause >nul
+# Open the default web browser to the application
+open "http://localhost:3000"
 
-:: Deactivate virtual environment
-echo Deactivating virtual environment...
-call venv\Scripts\deactivate
-echo Virtual environment deactivated
+# Keep the terminal window open
+echo "Press any key to stop the server and exit..."
+read -n 1
 
-:: Exit the script
+# Kill the server process
+kill $SERVER_PID
+
+# Deactivate virtual environment
+deactivate
+
+# Exit the script
 exit
+
