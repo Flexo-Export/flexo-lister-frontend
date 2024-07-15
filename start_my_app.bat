@@ -60,9 +60,13 @@ echo Activating virtual environment...
 if exist "venv\Scripts\activate.bat" (
     call venv\Scripts\activate.bat
 ) else (
-    echo Failed to find the activation script. Please ensure the virtual environment was created correctly.
-    pause
-    exit /b 1
+    if exist "venv\Scripts\activate" (
+        call venv\Scripts\activate
+    ) else (
+        echo Failed to find the activation script. Please ensure the virtual environment was created correctly.
+        pause
+        exit /b 1
+    )
 )
 
 :: Check if activation was successful
