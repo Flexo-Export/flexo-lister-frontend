@@ -135,6 +135,7 @@ pause
 :: Open the default web browser to the application
 start "" "http://localhost:3000"
 echo Opened default web browser to http://localhost:3000
+pause
 
 :: Keep the terminal window open
 echo Press any key to stop the server and exit...
@@ -146,6 +147,7 @@ for /f "tokens=5" %%a in ('netstat -aon ^| findstr :3000') do (
     taskkill /f /pid %%a 2>nul
 )
 echo Server process killed
+pause
 
 :: Deactivate virtual environment
 call venv\Scripts\deactivate.bat
