@@ -24,40 +24,80 @@ kill_process_on_port 3000
 # Check if Node.js is installed
 if ! command -v node &> /dev/null
 then
-    echo "Node.js is not installed. Installing Node.js..."
-    # Install Node.js (using Homebrew for macOS)
-    if command -v brew &> /dev/null
-    then
-        brew install node
-    else
-        echo "Homebrew is not installed. Please install Homebrew first."
-        exit 1
-    fi
+    echo "Node.js is not installed. Please install Node.js."
+    exit 1
 fi
 
 # Check if npm is installed
 if ! command -v npm &> /dev/null
 then
-    echo "npm is not installed. Installing npm..."
-    # Install npm
-    npm install -g npm
+    echo "npm is not installed. Please install npm."
+    exit 1
 fi
 
 # Check if Python is installed
 if ! command -v python3 &> /dev/null
 then
-    echo "Python3 is not installed. Installing Python3..."
-    # Install Python3 (using Homebrew for macOS)
-    if command -v brew &> /dev/null
-    then
-        brew install python
-    else
-        echo "Homebrew is not installed. Please install Homebrew first."
-        exit 1
-    fi
+    echo "Python3 is not installed. Please install Python3."
+    exit 1
 fi
 
 # Create and activate virtual environment
 VENV_DIR="$SCRIPT_DIR/venv"
 if [ ! -d "$VENV_DIR" ]; then
-    python3 -m venv "$VENV_DIR
+    python3 -m venv "$VENV_DIR"
+fi
+source "$VENV_DIR/bin/activate"
+
+# Check if required Python packages are installed
+REQUIRED_PKG="python-docx"
+PKG_OK=$(python3 -m pip show $REQUIRED_PKG)
+if [ "" = "$PKG_OK" ]; then
+  echo "Installing required Python packages..."
+  python3 -m pip install -r requirements.txt
+fi
+
+# Install Node.js dependencies if node_modules directory does not exist
+if [ ! -d "node_modules" ]; then
+  npm install
+fi
+
+# Start the server in the background with suppressed deprecation warnings
+node --no-deprecation node_modules/.bin/nodemon src/server.ts &
+
+# Store the PID of the background process
+SERVER_PID=$!
+
+# Give the server a few seconds to start
+sleep 5
+
+# Open the default web browser to the application
+if command -v open &> /dev/null
+then
+  open "http://localhost:3000"
+elif command -v xdg-open &> /dev/null
+then
+  xdg-open "http://localhost:3000"
+elif command -v start &> /dev/null
+then
+  start "http://localhost:3000"
+else
+  echo "Please open your web browser and navigate to http://localhost:3000"
+fi
+
+# Keep the terminal window open
+echo "Press any key to stop the server and exit..."
+read -n 1
+
+# Kill the server process
+kill $SERVER_PID
+
+# Deactivate virtual environment
+deactivate
+
+# Keep the terminal window open (for Git Bash)
+echo "Press any key to exit..."
+read -n 1
+
+# Exit the script
+exit
