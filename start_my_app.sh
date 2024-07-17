@@ -63,7 +63,7 @@ if [ ! -d "node_modules" ]; then
 fi
 
 # Start the server in the background with suppressed deprecation warnings
-node --no-deprecation node_modules/.bin/nodemon src/server.ts &
+npx nodemon --no-deprecation src/server.ts &
 
 # Store the PID of the background process
 SERVER_PID=$!
