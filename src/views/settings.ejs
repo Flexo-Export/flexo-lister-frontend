@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Settings</title>
+</head>
+<body>
+  <h1>Settings</h1>
+  <form id="settings-form">
+    <label for="dropboxAccessToken">Dropbox Access Token:</label>
+    <input type="text" id="dropboxAccessToken" name="dropboxAccessToken" value="<%= process.env.DROPBOX_ACCESS_TOKEN %>">
+    <br>
+    <label for="entryPath">Entry Path:</label>
+    <input type="text" id="entryPath" name="entryPath" value="<%= process.env.ENTRY_PATH %>">
+    <br>
+    <label for="openaiApiKey">OpenAI API Key:</label>
+    <input type="text" id="openaiApiKey" name="openaiApiKey" value="<%= process.env.OPENAI_API_KEY %>">
+    <br>
+    <button type="submit">Save</button>
+  </form>
+  <script>
+    const { ipcRenderer } = require('electron');
+    const form = document.getElementById('settings-form');
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(form);
+      const settings = {
+        DROPBOX_ACCESS_TOKEN: formData.get('dropboxAccessToken'),
+        ENTRY_PATH: formData.get('entryPath'),
+        OPENAI_API_KEY: formData.get('openaiApiKey')
+      };
+      ipcRenderer.send('save-settings', settings);
+    });
+  </script>
+</body>
+</html>
+

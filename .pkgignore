@@ -1,0 +1,4 @@
+node_modules/electron/dist
+node_modules/sliced/index.js
+node_modules/deep-defaults/lib/index.js
+

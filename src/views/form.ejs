@@ -1,17 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <%- include('partials/header') %>
+  <%- include('partials/header') %>
 </head>
 <body>
-    <div class="container">
-        <h1>Flexo Lister</h1>
-        <form action="/api/listing" method="post" enctype="multipart/form-data" onsubmit="updateFileOrder()">
-            <%- include('partials/formFields') %>
-        </form>
-    </div>
-    <!-- <%- include('partials/footer') %> --!>
-    <%- include('partials/scripts') %>
+  <div class="container">
+    <h1>Flexo Lister</h1>
+    <form action="/api/listing" method="post" enctype="multipart/form-data" onsubmit="updateFileOrder()">
+      <%- include('partials/formFields') %>
+    </form>
+    <button id="open-settings">Settings</button>
+  </div>
+  <!-- <%- include('partials/footer') %> -->
+  <%- include('partials/scripts') %>
+  <script>
+    const { ipcRenderer } = require('electron');
+    document.getElementById('open-settings').addEventListener('click', () => {
+      ipcRenderer.send('open-settings');
+    });
+  </script>
 </body>
 </html>
 

@@ -1,0 +1,6 @@
+{
+  "DROPBOX_ACCESS_TOKEN": "your_dropbox_access_token",
+  "ENTRY_PATH": "your_entry_path",
+  "OPENAI_API_KEY": "your_openai_api_key"
+}
+
